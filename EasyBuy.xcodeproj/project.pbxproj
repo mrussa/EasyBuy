@@ -12,10 +12,10 @@
 		561267142D5A133900A26281 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 561267132D5A133900A26281 /* Assets.xcassets */; };
 		561267172D5A133900A26281 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 561267152D5A133900A26281 /* LaunchScreen.storyboard */; };
 		561267212D5A1CD100A26281 /* SearchVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 561267202D5A1CD100A26281 /* SearchVC.swift */; };
+		5630FFC52D5CBB1400F01450 /* ProductCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5630FFC42D5CBB1400F01450 /* ProductCell.swift */; };
 		AC0CC9A12D5B875E000428AF /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0CC9A02D5B875E000428AF /* APIClient.swift */; };
 		AC0CC9A32D5B9642000428AF /* Product.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0CC9A22D5B9642000428AF /* Product.swift */; };
 		AC0CC9A62D5BA4FB000428AF /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = AC0CC9A52D5BA4FB000428AF /* SnapKit */; };
-		AC0CC9A82D5BA4FB000428AF /* SnapKit-Dynamic in Frameworks */ = {isa = PBXBuildFile; productRef = AC0CC9A72D5BA4FB000428AF /* SnapKit-Dynamic */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +26,7 @@
 		561267162D5A133900A26281 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		561267182D5A133900A26281 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		561267202D5A1CD100A26281 /* SearchVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchVC.swift; sourceTree = "<group>"; };
+		5630FFC42D5CBB1400F01450 /* ProductCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductCell.swift; sourceTree = "<group>"; };
 		AC0CC9A02D5B875E000428AF /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		AC0CC9A22D5B9642000428AF /* Product.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Product.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -36,7 +37,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				AC0CC9A62D5BA4FB000428AF /* SnapKit in Frameworks */,
-				AC0CC9A82D5BA4FB000428AF /* SnapKit-Dynamic in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,6 +70,7 @@
 				561267202D5A1CD100A26281 /* SearchVC.swift */,
 				AC0CC9A02D5B875E000428AF /* APIClient.swift */,
 				AC0CC9A22D5B9642000428AF /* Product.swift */,
+				5630FFC42D5CBB1400F01450 /* ProductCell.swift */,
 			);
 			path = EasyBuy;
 			sourceTree = "<group>";
@@ -92,7 +93,6 @@
 			name = EasyBuy;
 			packageProductDependencies = (
 				AC0CC9A52D5BA4FB000428AF /* SnapKit */,
-				AC0CC9A72D5BA4FB000428AF /* SnapKit-Dynamic */,
 			);
 			productName = EasyBuy;
 			productReference = 561267072D5A133300A26281 /* EasyBuy.app */;
@@ -154,6 +154,7 @@
 				561267212D5A1CD100A26281 /* SearchVC.swift in Sources */,
 				5612670B2D5A133300A26281 /* AppDelegate.swift in Sources */,
 				AC0CC9A32D5B9642000428AF /* Product.swift in Sources */,
+				5630FFC52D5CBB1400F01450 /* ProductCell.swift in Sources */,
 				5612670D2D5A133300A26281 /* SceneDelegate.swift in Sources */,
 				AC0CC9A12D5B875E000428AF /* APIClient.swift in Sources */,
 			);
@@ -380,11 +381,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = AC0CC9A42D5BA4FB000428AF /* XCRemoteSwiftPackageReference "SnapKit" */;
 			productName = SnapKit;
-		};
-		AC0CC9A72D5BA4FB000428AF /* SnapKit-Dynamic */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = AC0CC9A42D5BA4FB000428AF /* XCRemoteSwiftPackageReference "SnapKit" */;
-			productName = "SnapKit-Dynamic";
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

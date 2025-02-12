@@ -7,14 +7,14 @@
 
 import Foundation
 
-struct Product: Decodable {
+struct Product: Hashable, Decodable {
     var id: Int
     var title: String
     var price: Int
     var description: String
     var images: [String]
     
-    struct Category: Decodable {
+    struct Category: Hashable, Decodable {
         var id: Int
         var name: String
         var image: String

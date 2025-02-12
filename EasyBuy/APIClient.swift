@@ -5,7 +5,7 @@
 //  Created by  on 2/11/25.
 //
 
-import Foundation
+import UIKit
 
 enum NetworkErrors: Error {
     case encodingFailed(innerError: EncodingError)
@@ -43,4 +43,50 @@ class APIClient {
         
     }
 
+}
+
+class ImageLoader {
+    private let cache = NSCache<NSString, UIImage>()
+    
+    
+    func loadImage(from url: String, completion: @escaping (UIImage?) -> Void) {
+        let cacheKey = NSString(string: url)
+        
+        if let cachedImage = cache.object(forKey: cacheKey) {
+            completion(cachedImage)
+            return
+        }
+        
+        guard let imageURL = URL(string: url) else {
+            completion(nil)
+            return
+        }
+        
+        URLSession.shared.dataTask(with: imageURL) { data, response, error in
+            
+            if let error = error {
+                print("\(error.localizedDescription)")
+                completion(nil)
+                return
+            }
+            
+            guard let data = data, let image = UIImage(data: data) else{
+                completion(nil)
+                return
+            }
+            
+            self.cache.setObject(image, forKey: cacheKey)
+            
+            DispatchQueue.main.async {
+                completion(image)
+            }
+        }.resume()
+        
+        
+        print("🔄 Загружаю: \(url)")
+        print("✅ Успех")
+
+        
+
+    }
 }

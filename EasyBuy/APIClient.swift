@@ -81,12 +81,11 @@ class ImageLoader {
                 completion(image)
             }
         }.resume()
-        
-        
-        print("🔄 Загружаю: \(url)")
-        print("✅ Успех")
 
+                print("🔄 Загружаю: \(url)")
+                print("✅ Успех")
         
 
     }
 }
+

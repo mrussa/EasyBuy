@@ -12,44 +12,86 @@ enum Section {
     case main
 }
 
+class SearchVC: UIViewController, UISearchResultsUpdating {
 
-
-class SearchVC: UIViewController {
-        
     var collectionView: UICollectionView!
     var dataSource: UICollectionViewDiffableDataSource<Section, Product>?
     
+    var allProducts: [Product] = []
+    var filteredProducts: [Product] = []
     
-    func loadProduct() {
-        var product: [Product] = []
-        let apiClient = APIClient()
-
-
-        Task {
-            do {
-                product = try await apiClient.getProductList()
-                print(product)
-                
-                var snapshot = NSDiffableDataSourceSnapshot<Section, Product>()
-                snapshot.appendSections([.main])
-                snapshot.appendItems(product, toSection: .main)
-                
-//                let first10 = product.prefix(10).map { $0.images }
-//                print("🖼 Первые 10 картинок: \(first10)")
-                
-                await dataSource?.apply(snapshot, animatingDifferences: true)
-
-            } catch {
-                print("Error")
-            }
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let query = searchController.searchBar.text, !query.isEmpty else {
+            filteredProducts = allProducts
+            updateSnapshot()
+            return
         }
         
-            
+        filteredProducts = allProducts.filter { $0.title.localizedCaseInsensitiveContains(query) }
+        updateSnapshot()
     }
 
+    func loadProduct() {
+        let apiClient = APIClient()
+        
+        Task {
+            do {
+                allProducts = try await apiClient.getProductList()
+                allProducts.sort { $0.id > $1.id }
+                filteredProducts = allProducts
+                updateSnapshot()
+            } catch {
+                print("❌ Ошибка загрузки данных")
+            }
+        }
+    }
+    
+    func saveSearchQuery(_ query: String) {
+        var searches = UserDefaults.standard.stringArray(forKey: "recentSearches") ?? []
+        if !searches.contains(query) {
+            searches.insert(query, at: 0)
+        }
+        if searches.count > 10 { searches.removeLast() }
+        UserDefaults.standard.set(searches, forKey: "recentSearches")
+    }
+
+    func updateSnapshot() {
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Product>()
+        snapshot.appendSections([.main])
+
+        let validProducts = filteredProducts.filter { product in
+            let validImages = product.images
+                .map { $0.trimmingCharacters(in: CharacterSet(charactersIn: "[\"]")) }
+                .filter { !$0.contains("placeimg.com") && !$0.isEmpty }
+            
+            return !validImages.isEmpty
+        }
+        
+        snapshot.appendItems(validProducts, toSection: .main)
+
+        Task { await dataSource?.apply(snapshot, animatingDifferences: true) }
+    }
+
+    @objc func openFilters() {
+        let filtersVC = FiltersVC()
+        let navVC = UINavigationController(rootViewController: filtersVC)
+        navVC.modalPresentationStyle = .automatic
+        present(navVC, animated: true)
+    }
+
+    @objc func openCart() {
+        print(" Открыть корзину")
+    }
+
+    override var prefersStatusBarHidden: Bool {
+        return false
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        view.backgroundColor = .systemBackground
+
         
         let layout = UICollectionViewFlowLayout()
         let spacing: CGFloat = 5
@@ -57,6 +99,20 @@ class SearchVC: UIViewController {
         layout.itemSize = CGSize(width: width, height: 280)
         layout.minimumInteritemSpacing = spacing
         layout.minimumLineSpacing = spacing
+        
+        let search = UISearchController(searchResultsController: nil)
+        search.searchResultsUpdater = self
+        search.obscuresBackgroundDuringPresentation = false
+        search.hidesNavigationBarDuringPresentation = false
+        search.searchBar.placeholder = "Search"
+        search.searchBar.backgroundColor = .systemBackground
+        search.searchBar.barTintColor = .systemBackground
+        search.searchBar.isTranslucent = true
+        navigationItem.searchController = search
+            
+        let filterButton = UIBarButtonItem(image: UIImage(systemName: "slider.horizontal.3"), style: .plain, target: self, action: #selector(openFilters))
+        let shoppingListButton = UIBarButtonItem(image: UIImage(systemName: "cart"), style: .plain, target: self, action: #selector(openCart))
+        navigationItem.rightBarButtonItems = [shoppingListButton, filterButton]
 
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .white
@@ -66,32 +122,35 @@ class SearchVC: UIViewController {
         configureDataSource()
         loadProduct()
 
-        
         collectionView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
             make.leading.trailing.equalToSuperview()
         }
-
-
     }
-    
+
     func configureDataSource() {
         dataSource = UICollectionViewDiffableDataSource<Section, Product>(collectionView: collectionView) { collectionView, indexPath, product in
             
-            let cleanedURL = product.images.first?
-                .replacingOccurrences(of: "[\"", with: "")
-                .replacingOccurrences(of: "\"]", with: "")
-            
-            
+            let validImages = product.images
+                .map { $0.trimmingCharacters(in: CharacterSet(charactersIn: "[\"]")) }
+                .filter { !$0.contains("placeimg.com") }
+
+            let imageUrl = validImages.first ?? ""
+
+            if imageUrl.isEmpty {
+                print("⚠️ Нет доступных изображений для продукта: \(product.title)")
+            } else {
+                print("🔄 Загружаю: \(imageUrl)")
+            }
+
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProductCell.identifier, for: indexPath) as! ProductCell
-            cell.configure(with: cleanedURL ?? "", title: product.title, price: "\(product.price) $")
+            cell.configure(with: imageUrl, title: product.title, price: "\(product.price) $")
             return cell
         }
-        
     }
-
 }
+
 
 
 //    var products: [Product] = []

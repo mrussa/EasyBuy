@@ -8,14 +8,16 @@
 import UIKit
 import SnapKit
 
+// MARK: - ProductCell
 class ProductCell: UICollectionViewCell {
     static let identifier = "ProductCell"
     
+    // MARK: - UI Elements
     let productImageView = UIImageView()
     let titleLabel = UILabel()
     let priceLabel = UILabel()
     
-    
+    // MARK: - Initialization
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -56,18 +58,35 @@ class ProductCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Configuration
     func configure(with imageURL: String, title: String, price: String) {
-        
-                
         titleLabel.text = title
         priceLabel.text = price
-        
-        let loader = ImageLoader()
-        loader.loadImage(from: imageURL) { image in
-            DispatchQueue.main.async {
-                self.productImageView.image = image
-            }
-        }
 
+        let indicator = UIActivityIndicatorView(style: .medium)
+        indicator.center = productImageView.center
+        productImageView.addSubview(indicator)
+        indicator.startAnimating()
+
+        guard let url = URL(string: imageURL) else {
+            DispatchQueue.main.async {
+                indicator.stopAnimating()
+                indicator.removeFromSuperview()
+                self.productImageView.image = UIImage(named: "placeholder")
+            }
+            return
+        }
+        
+        URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
+            DispatchQueue.main.async {
+                indicator.stopAnimating()
+                indicator.removeFromSuperview()
+                if let data = data, let image = UIImage(data: data) {
+                    self?.productImageView.image = image
+                } else {
+                    self?.productImageView.image = UIImage(named: "placeholder")
+                }
+            }
+        }.resume()
     }
 }

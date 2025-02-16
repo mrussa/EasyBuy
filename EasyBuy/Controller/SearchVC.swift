@@ -237,6 +237,7 @@ extension SearchVC: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         guard let text = searchBar.text, !text.isEmpty else { return }
         saveSearchQuery(text)
+
         searchBar.resignFirstResponder()
     }
 }

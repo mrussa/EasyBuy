@@ -213,7 +213,6 @@ class FiltersVC: UIViewController {
         
         let priceFromValue = priceFrom ?? "0"
         let priceToValue = priceTo ?? "999999"
-        let categoryId = getCategoryId(for: selectedCategory)
         
         if selectedSortOption == "Price: Low to High" {
             onApplyFilters?(getCategoryId(for: selectedCategory), priceFromValue, priceToValue, "asc")
